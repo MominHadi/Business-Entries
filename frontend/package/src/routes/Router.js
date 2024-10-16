@@ -32,16 +32,15 @@ const ThemeRoutes = [
       { path: "/about", exact: true, element: <About /> },
       { path: "/alerts", exact: true, element: <Alerts /> },
       { path: "/badges", exact: true, element: <Badges /> },
-      { path: "/buttons", exact: true, element: <Buttons /> },
+      { path: "/buttons",  element: <Buttons /> },
       { path: "/cards", exact: true, element: <Cards /> },
       { path: "/grid", exact: true, element: <Grid /> },
       { path: "/table", exact: true, element: <Tables /> },
       { path: "/forms", exact: true, element: <Forms /> },
       { path: "/breadcrumbs", exact: true, element: <Breadcrumbs /> },
-      { path: "/businessEntry", exact: true, element: <BusinessEntry /> },
+      { path: "/businessEntry",element: <BusinessEntry /> },
       {
-        path: "/businessEntryReports", exact: true, element: 
-          <Reports />  
+        path: "/businessEntryReports", element: <Reports />  
       },
     ],
   },
