@@ -120,7 +120,7 @@ const BusinessEntry = () => {
             newTotalAmount += amount;
         });
 
-        setTotalAmount(newTotalAmount); // Update totalAmount here
+        setTotalAmount(newTotalAmount); // Update totalAmount heres
 
     };
     const validateFormData = () => {
