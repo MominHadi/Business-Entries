@@ -40,8 +40,8 @@ const ThemeRoutes = [
       { path: "/breadcrumbs", exact: true, element: <Breadcrumbs /> },
       { path: "/businessEntry", exact: true, element: <BusinessEntry /> },
       {
-        path: "/businessEntryReports", exact: true, element: <PrimeReactProvider>
-          <Reports />    </PrimeReactProvider>
+        path: "/businessEntryReports", exact: true, element: 
+          <Reports />  
       },
     ],
   },

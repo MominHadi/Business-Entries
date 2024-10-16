@@ -66,7 +66,7 @@ const BusinessEntry = () => {
     useEffect(() => {
         nationality.registerLocale(require('i18n-nationality/langs/en.json'));
 
-       
+
         const allNationalities = nationality.getNames('en');
 
         const nationalitiesArray = Object.entries(allNationalities).map(([code, name]) => ({
@@ -79,8 +79,8 @@ const BusinessEntry = () => {
         axios.get(`${API_URL}/api/businessEntry/invoiceNo`)
             .then(response => {
                 console.log(response.data.data.seriesValue, 'Datas')
-              setFormData({...formData,invoiceNo: response.data.data.seriesValue }) 
-                console.log(formData.invoiceNo,'43f455f4ff')// Example: Auto-generate or use logic to set invoice number
+                setFormData({ ...formData, invoiceNo: response.data.data.seriesValue })
+                console.log(formData.invoiceNo, '43f455f4ff')// Example: Auto-generate or use logic to set invoice number
             })
             .catch(error => {
                 console.log(error, 'Errors')
@@ -114,6 +114,13 @@ const BusinessEntry = () => {
     const handleRemoveItem = (index) => {
         const newItems = formData.items.filter((item, i) => i !== index);
         setFormData({ ...formData, items: newItems });
+        let newTotalAmount = 0;
+        newItems.forEach(item => {
+            const amount = parseFloat(item.amount) || 0;
+            newTotalAmount += amount;
+        });
+
+        setTotalAmount(newTotalAmount); // Update totalAmount here
 
     };
     const validateFormData = () => {
@@ -154,13 +161,12 @@ const BusinessEntry = () => {
 
         if (isValid) {
             formData.totalAmount = totalAmount
-      
+
             axios.post(`${API_URL}/api/businessEntry`, formData, {
                 headers: {
                     'Content-Type': "application/json"
                 }
             }).then(response => {
-                console.log(response, 'Response')
 
                 if (response.status === 201) {
                     console.log(`${API_URL}/${response.data.pdfUrl}`)
@@ -229,7 +235,7 @@ const BusinessEntry = () => {
                                         value={formData.invoiceNo}
                                         disabled
                                     />
-                                    {console.log(formData.invoiceNo,'formData.invoiceN')}
+                                    {console.log(formData.invoiceNo, 'formData.invoiceN')}
                                 </FormGroup>
                             </Col>
                             <Col md={6}>
@@ -441,6 +447,23 @@ const BusinessEntry = () => {
                                     </tr>
                                 ))}
                             </tbody>
+                            <tfoot>
+
+                                <tr>
+                                    <td></td>
+                                    <td style={{ textAlign: 'center' }}><b>Total Amount</b>  </td>
+                                    <td>
+                                        <Input
+                                            type="number"
+                                            value={totalAmount}
+                                            placeholder="Amount"
+                                            disabled
+                                        />   </td>
+                                    <td style={{ display: 'flex', justifyContent: 'space-evenly' }}>
+
+                                    </td>
+                                </tr>
+                            </tfoot>
                         </Table>
 
 

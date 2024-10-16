@@ -91,8 +91,20 @@ const Sidebar = () => {
         </div>
         <div className="bg-dark text-white p-2 opacity-75">Steave Rojer</div>
       </div> */}
+      <div className="d-flex align-items-right">
+        <Button
+          color="white"
+          className="ms-auto text-dark d-lg-none"
+          style={{ backgroundColor: "transparent", border: "none", fontSize: "20px" }} // Ensure it's visible
+          onClick={() => showMobilemenu()}
+        >
+          <i className="bi bi-x-circle"></i>
+        </Button>
+
+      </div>
       <div className="p-3 mt-2">
         <Nav vertical className="sidebarNav">
+
           {navigation.map((navi, index) => (
             <NavItem key={index} className="sidenav-bg">
               <Link
