@@ -11,10 +11,12 @@ const rootElement = document.getElementById('root');
 const root = createRoot(rootElement);
 
 root.render(
-  <BrowserRouter>
+  <React.StrictMode> 
+  <HashRouter>
       <App />
    
-  </BrowserRouter>
+  </HashRouter>
+  </React.StrictMode> 
 );
 
 // If you want to start measuring performance in your app, pass a function
