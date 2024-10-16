@@ -56,12 +56,12 @@ const navigation = [
   // },
   {
     title: "Business Entry",
-    href: "#/businessEntry",
+    href: "/businessEntry",
     icon: "bi bi-briefcase-fill",
   },
   {
     title: "Reports",
-    href: "#/businessEntryReports",
+    href: "/businessEntryReports",
     icon: "bi bi-card-list",
   },
 ];
