@@ -3,8 +3,7 @@ import Sidebar from "./Sidebar";
 import Header from "./Header";
 import { Container } from "reactstrap";
 
-const FullLayout = ({children}) => {
-  // console.log(Component,'Component')
+const FullLayout = () => {
   return (
     <main>
       {/********header**********/}
@@ -18,7 +17,7 @@ const FullLayout = ({children}) => {
         <div className="contentArea">
           {/********Middle Content**********/}
           <Container className="p-4" fluid>
-            {children}
+            <Outlet />
           </Container>
         </div>
       </div>
