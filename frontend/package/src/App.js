@@ -21,23 +21,21 @@ const Breadcrumbs = lazy(() => import("./views/ui/Breadcrumbs"));
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <FullLayout />,
-    children: [
-      { path: "/", element: <Navigate to="/businessEntry" /> },
-      { path: "/starter", element: <Starter /> },
-      { path: "/about", element: <About /> },
-      { path: "/alerts", element: <Alerts /> },
-      { path: "/badges", element: <Badges /> },
-      { path: "/buttons", element: <Buttons /> },
-      { path: "/cards", element: <Cards /> },
-      { path: "/grid", element: <Grid /> },
-      { path: "/table", element: <Tables /> },
-      { path: "/forms", element: <Forms /> },
-      { path: "/breadcrumbs", element: <Breadcrumbs /> },
-      { path: "/businessEntry", element: <BusinessEntry /> },
-      { path: "/businessEntryReports", element: <Reports /> },
-    ],
+    element: <><FullLayout children={<BusinessEntry />} /></>,
+ 
   },
+  {
+    path: "/businessEntry",
+    element: <><FullLayout children={<BusinessEntry />} /></>,
+ 
+  },
+  {
+    path: "/businessEntryReports",
+    element: <><FullLayout children={<Reports />} /></>,
+ 
+  },
+
+
 ]);
 
 const App = () => {
