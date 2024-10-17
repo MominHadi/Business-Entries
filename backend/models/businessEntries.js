@@ -21,8 +21,8 @@ const businessEntriesSchema = new mongoose.Schema({
     subCategory: {
         //Business Sub-Category
         type: String,
-        enum: ['Indian Apostille', 'Dubai Embassy and Mofa', 'Others'],
-        required: true
+        // enum: ['Indian Apostille', 'Dubai Embassy and Mofa', 'Others'],
+        // required: true
     },
     customerName: {
         type: String,

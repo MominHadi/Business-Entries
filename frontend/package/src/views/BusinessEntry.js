@@ -130,7 +130,11 @@ const BusinessEntry = () => {
         if (!formData.date) errors.date = "Date is required";
         if (!formData.customerName) errors.customerName = "Customer name is required";
         if (!formData.businessCategory) errors.businessCategory = "Business category is required";
-        if (!formData.subCategory) errors.subCategory = "Sub-category is required";
+
+        if (formData.businessCategory === 'Attestation' || formData.businessCategory === 'VisaApplication') {
+            if (!formData.subCategory) errors.subCategory = "Sub-category is required";
+
+        }
         if (!formData.passportNo) errors.passportNo = "Passport/ID No is required";
         if (!formData.nationality) errors.nationality = "Nationality is required";
 
@@ -171,7 +175,7 @@ const BusinessEntry = () => {
                 if (response.status === 201) {
                     console.log(`${API_URL}/${response.data.pdfUrl}`)
                     window.open(`${API_URL}/${response.data.pdfUrl}`);
-                    Navigate('/businessEntry', { replace: true })
+                    window.location.reload()
                 }
             }).catch(error => {
                 if (error.response) {
