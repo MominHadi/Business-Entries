@@ -161,7 +161,7 @@ const BusinessEntry = () => {
     const submitFormData = () => {
         const isValid = validateFormData();
 
-        console.log(isValid, 'validateFormDat33a');
+        console.log(isValid, 'validateFormDatdidii33a');
 
         if (isValid) {
             formData.totalAmount = totalAmount
