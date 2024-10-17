@@ -22,25 +22,7 @@ const BusinessEntry = lazy(() => import("../views/BusinessEntry.js"));
 const Reports = lazy(() => import("../views/Reports.js"));
 const Breadcrumbs = lazy(() => import("../views/ui/Breadcrumbs"));
 
-const isAuthenticated = () => {
-  const lastLoginTime = localStorage.getItem('lastLoginTime');
-  
-  if (!lastLoginTime) {
-    return false; // Not logged in
-  }
-  
-  // Get current time
-  const currentTime = new Date().getTime();
-  
-  // Calculate time difference in minutes
-  const timeDifference = (currentTime - lastLoginTime) / (1000 * 60); // Convert milliseconds to minutes
-  console.log(timeDifference,currentTime,lastLoginTime,'222 ')
-  // Check if the time difference is less than 2 minutes
-  return timeDifference < 5; // Return true if time difference is less than 2 minutes
-};
 
-console.log(isAuthenticated(),'VisAuthenticated')
-isAuthenticated()
 /*****Routes******/
 const ThemeRoutes = [
   {
@@ -52,7 +34,7 @@ const ThemeRoutes = [
     path: "/",
     element:  <PrivateRoute element={FullLayout} />,
     children: [
-      { path: "/", element:isAuthenticated() ? <Navigate to="/businessEntry" />: <Navigate to="/login" /> },
+      { path: "/",element: <PrivateRoute element={BusinessEntry} />},
       // { path: "/starter", element: <Starter /> },
       // { path: "/about", element: <About /> },
       // { path: "/alerts", element: <Alerts /> },
