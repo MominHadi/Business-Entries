@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Form, FormGroup, Label, Input, Container, Row, Col, Card, CardBody, CardTitle } from 'reactstrap';
 import { useNavigate } from 'react-router-dom';
+
 const LoginForm = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
@@ -23,12 +24,9 @@ const LoginForm = () => {
         }
 
         if (username === "admin" && password === 'admin@123') {
-            const currentTime = new Date().getTime();
-            console.log(currentTime, 'CurrentTieme');
-            localStorage.setItem('lastLoginTime', currentTime);
-            console.log('Logging in:', { username, password });
-
-            Navigate('/', { replace: true })
+            localStorage.setItem('isAuthenticated', 'true'); // Set authentication flag
+            localStorage.setItem('lastLoginTime', new Date().getTime()); // Set last login time
+            Navigate('/', { replace: true });
         } else {
             errors.invalidStatement = "Invalid Username or Password";
         }

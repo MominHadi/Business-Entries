@@ -1,5 +1,5 @@
 import { Button, Nav, NavItem } from "reactstrap";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import user1 from "../assets/images/users/user4.jpg";
 import probg from "../assets/images/bg/download.jpg";
 
@@ -67,10 +67,17 @@ const navigation = [
 ];
 
 const Sidebar = () => {
+  const navigate = useNavigate()
   const showMobilemenu = () => {
     document.getElementById("sidebarArea").classList.toggle("showSidebar");
   };
   let location = useLocation();
+  // Logout function
+  const handleLogout = () => {
+    localStorage.removeItem('isAuthenticated'); // Clear authentication flag
+    localStorage.removeItem('lastLoginTime'); // Optionally clear last login time
+    navigate('/login'); // Redirect to login page
+  };
 
   return (
     <div>
@@ -120,6 +127,17 @@ const Sidebar = () => {
               </Link>
             </NavItem>
           ))}
+            <NavItem className="sidenav-bg">
+            <Button
+              color="transparent" // Keep background transparent
+              className="nav-link text-secondary py-3" // Apply similar styles
+              onClick={handleLogout} // Call logout function
+            >
+              <i className="bi bi-box-arrow-right"></i> {/* Icon for logout */}
+              <span className="ms-3">Logout</span>
+            </Button>
+          </NavItem>
+       
           {/* <Button
             color="danger"
             tag="a"
