@@ -58,6 +58,22 @@ const businessEntriesSchema = new mongoose.Schema({
                 type: Number,
                 required: true,
             },
+            price: {
+                type: Number,
+                required: true,
+                default:0
+            },
+            discountPercent: {
+                type: Number,
+                required: true,
+                default:0
+            },
+            vatPercent: {
+                type: Number,
+                required: true,
+                default:0
+            },
+            
             amount: {
                 type: Number,
                 required: true

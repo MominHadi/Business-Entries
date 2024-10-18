@@ -53,11 +53,11 @@ const Header = () => {
           className="d-sm-block d-md-none"
           onClick={Handletoggle}
         >
-          {isOpen ? (
+          {/* {isOpen ? (
             <i className="bi bi-x"></i>
-          ) : (
+          ) : ( 
             <i className="bi bi-three-dots-vertical"></i>
-          )}
+          )} */}
         </Button>
       </div>
 
@@ -85,7 +85,7 @@ const Header = () => {
             </DropdownMenu>
           </UncontrolledDropdown> */}
         </Nav>
-        <Dropdown isOpen={dropdownOpen} toggle={toggle}>
+        {/* <Dropdown isOpen={dropdownOpen} toggle={toggle}>
           <DropdownToggle color="transparent">
             <img
               src={user1}
@@ -103,7 +103,7 @@ const Header = () => {
             <DropdownItem>Inbox</DropdownItem>
             <DropdownItem>Logout</DropdownItem>
           </DropdownMenu>
-        </Dropdown>
+        </Dropdown> */}
       </Collapse>
     </Navbar>
   );

@@ -9,7 +9,8 @@ import {
     FormGroup,
     Label,
     Input,
-    Table
+    Table,
+    Spinner
 } from "reactstrap";
 import { useNavigate } from 'react-router-dom'
 import SweetAlert2 from "react-sweetalert2";
@@ -28,6 +29,7 @@ import axios from "axios";
 const BusinessEntryReports = () => {
     const [reportsData, setReportsData] = useState([]);
     const [swalProps, setSwalProps] = useState({ show: false });
+    const [isLoading, setIsLoading] = useState(false); // Loader state
 
     const [formData, setFormData] = useState({
 
@@ -92,13 +94,14 @@ const BusinessEntryReports = () => {
 
         return Object.keys(errors).length === 0;
     };
-    
+
     const submitFormData = () => {
         const isValid = validateFormData();
 
         console.log(isValid, 'validateFormData');
 
         if (isValid) {
+            setIsLoading(true);
             axios.post(`${API_URL}/api/reports`, formData).then(response => {
                 console.log(response, 'Response')
 
@@ -109,6 +112,8 @@ const BusinessEntryReports = () => {
             }).catch(error => {
                 console.log(error)
 
+            }).finally(() => {
+                setIsLoading(false);
             })
 
         } else {
@@ -183,57 +188,43 @@ const BusinessEntryReports = () => {
                 <SweetAlert2 {...swalProps} />
 
             </Row>
-
-
-            {reportsData.length > 0 &&
-                <Row>
+            {isLoading ? (
+                <Row className="text-center">
                     <Col>
-                        <Card>
-                            {/* <CardTitle>
-                      Report
-                  </CardTitle> */}
-                            <CardBody>
-                                <DataTable
-                                    title="Business Entry Report"
-                                    columns={columns}
-                                    data={reportsData}
-                                    pagination
-                                />
-                                {/* <Table className="no-wrap mt-3 align-middle" responsive borderless>
-                                    <thead>
-                                        <tr>
-                                            <th>Invoice No.</th>
-                                            <th>Date</th>
-
-                                            <th>Customer Name</th>
-                                            <th>Category</th>
-                                            <th>Total Amount</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {reportsData.map((tdata, index) => (
-                                            <tr key={index} className="border-top">
-
-                                                <td>{tdata.invoiceNo}</td>
-                                                <td>{tdata.date}</td>
-                                                <td>{tdata.customerName}</td>
-                                                <td>{tdata.category}</td>
-                                                <td>{tdata.totalAmount}</td>
-                
-
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </Table> */}
-                            </CardBody>
-
-                        </Card>
+                        <Spinner style={{ width: '3rem', height: '3rem' }} color="primary" />
+                        <div>Loading...</div>
                     </Col>
-
-
                 </Row>
+            ) : (
+                reportsData.length > 0 ? (
+                    <Row>
+                        <Col>
+                            <Card>
+                                <CardBody>
+                                    <DataTable
+                                        title="Business Entry Report"
+                                        columns={columns}
+                                        data={reportsData}
+                                        pagination
+                                    />
+                                </CardBody>
+                            </Card>
+                        </Col>
+                    </Row>
+                ) : (
+                    <Row>
+                        <Col>
+                            <Card>
+                                <CardBody>
+                                    <h5 style={{ textAlign: 'center' }}>No entries found for the selected date range.</h5>
+                                </CardBody>
+                            </Card>
+                        </Col>
+                    </Row>
+                )
+            )}
 
-            }          </>
+        </>
     );
 };
 

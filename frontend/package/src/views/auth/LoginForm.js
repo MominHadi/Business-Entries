@@ -75,7 +75,7 @@ const LoginForm = () => {
                                         onChange={(e) => setUsername(e.target.value)}
                                         style={inputStyle}
                                     />
-                                    {formErrors.username && <div className="text-danger">{formErrors.username}</div>}
+                                    {formErrors.username && <div style={{textAlign:'center'}} className="text-danger">{formErrors.username}</div>}
                                 </FormGroup>
                                 <FormGroup>
                                     <Label for="password">Password</Label>
@@ -87,11 +87,11 @@ const LoginForm = () => {
                                         onChange={(e) => setPassword(e.target.value)}
                                         style={inputStyle}
                                     />
-                                    {formErrors.password && <div className="text-danger">{formErrors.password}</div>}
+                                    {formErrors.password && <div  style={{textAlign:'center'}}  className="text-danger">{formErrors.password}</div>}
 
                                 </FormGroup>
 
-                                {formErrors.invalidStatement && <div className="text-danger">{formErrors.invalidStatement}</div>}
+                                {formErrors.invalidStatement && <div  style={{textAlign:'center'}}  className="text-danger">{formErrors.invalidStatement}</div>}
                                 <Button color="primary" block style={buttonStyle}>
                                     Login
                                 </Button>

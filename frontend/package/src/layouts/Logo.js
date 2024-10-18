@@ -3,8 +3,9 @@ import { Link } from "react-router-dom";
 
 const Logo = () => {
   return (
-    <Link to="/">
-      <LogoDark />
+    <Link className="text-light" style={{textDecoration:'none'}} to="/">
+{/* <i  class="bi bi-house-fill"></i> */}
+Business Entry
     </Link>
   );
 };

@@ -13,6 +13,8 @@ import {
 } from "reactstrap";
 import { useNavigate } from 'react-router-dom'
 import SweetAlert2 from "react-sweetalert2";
+import DataTable from 'react-data-table-component';
+import { FaTrashAlt, FaPlus } from 'react-icons/fa'; // Import icons
 
 import { useEffect, useState } from "react";
 import nationality from 'i18n-nationality';
@@ -38,6 +40,9 @@ const BusinessEntry = () => {
             {
                 name: "",
                 units: 1,
+                price: 0,
+                discountPercent: 0,
+                vatPercent: 0,
                 amount: 0,
             }
         ],
@@ -53,7 +58,6 @@ const BusinessEntry = () => {
         nationality: "",
         contactNo: "",
         items: [],
-
     });
     const Navigate = useNavigate();
     const handleChange = (e) => {
@@ -66,7 +70,6 @@ const BusinessEntry = () => {
     useEffect(() => {
         nationality.registerLocale(require('i18n-nationality/langs/en.json'));
 
-
         const allNationalities = nationality.getNames('en');
 
         const nationalitiesArray = Object.entries(allNationalities).map(([code, name]) => ({
@@ -78,9 +81,7 @@ const BusinessEntry = () => {
 
         axios.get(`${API_URL}/api/businessEntry/invoiceNo`)
             .then(response => {
-                console.log(response.data.data.seriesValue, 'Datas')
                 setFormData({ ...formData, invoiceNo: response.data.data.seriesValue })
-                console.log(formData.invoiceNo, '43f455f4ff')// Example: Auto-generate or use logic to set invoice number
             })
             .catch(error => {
                 console.log(error, 'Errors')
@@ -96,18 +97,28 @@ const BusinessEntry = () => {
         let newTotalAmount = 0;
         newItems.forEach(item => {
             const amount = parseFloat(item.amount) || 0;
-            newTotalAmount += amount;
+            const discount = parseFloat(item.discountPercent) || 0;
+            const vatPercent = parseFloat(item.vatPercent) || 0;
+            const price = parseFloat(item.price) || 0;
+
+            const discountAmount = (parseFloat(price) * parseFloat(discount)) / 100;
+            const discountedValue = (parseFloat(price) - parseFloat(discountAmount));
+            const vatAmount = discountAmount > 0 ? (parseFloat(discountedValue) * parseFloat(vatPercent)) / 100 :
+                (parseFloat(price) * parseFloat(vatPercent)) / 100;
+            item.amount = parseFloat((parseFloat(price) - parseFloat(discountAmount)) + parseFloat(vatAmount)).toFixed(2);
+            newTotalAmount += item.amount;
+
         });
 
         setFormData({ ...formData, items: newItems });
-        setTotalAmount(newTotalAmount); // Update totalAmount here
+        setTotalAmount(parseFloat(newTotalAmount).toFixed(2)); // Update totalAmount here
     };
 
 
     const handleAddItem = () => {
         setFormData({
             ...formData,
-            items: [...formData.items, { name: "", units: 1, amount: 0 }]
+            items: [...formData.items, { name: "", units: 1, price: 0, vatPercent: 0, discountPercent: 0, amount: 0, }]
         });
     };
 
@@ -120,9 +131,11 @@ const BusinessEntry = () => {
             newTotalAmount += amount;
         });
 
-        setTotalAmount(newTotalAmount); // Update totalAmount heres
+        setTotalAmount(parseFloat(newTotalAmount).toFixed(2)); // Update totalAmount heres
 
     };
+
+
     const validateFormData = () => {
         const errors = {};
         let newTotalAmount = 0;
@@ -142,8 +155,12 @@ const BusinessEntry = () => {
             const itemErrors = {};
             if (!item.name) itemErrors.name = "Item name is required";
             if (item.units <= 0) itemErrors.units = "Units must be at least 1";
+            if (item.price <= 0) itemErrors.price = "Price must be at least 1";
+            if (item.discountPercent < 0 || item.discountPercent >= 100) itemErrors.discountPercent = "Enter Valid Discount %";
+            if (item.vatPercent < 0 || item.vatPercent >= 100) itemErrors.vatPercent = "Enter Valid VAT %";
             if (item.amount <= 0) itemErrors.amount = "Amount must be greater than 0";
-            if (!item.name || item.units <= 0 || item.amount <= 0) {
+            if (!item.name || item.units <= 0 || item.amount <= 0 ||
+                (item.discountPercent < 0 || item.discountPercent >= 100) || (item.vatPercent < 0 || item.vatPercent >= 100)) {
                 errors[`item-${index}`] = itemErrors;
             }
             // Calculate the total amount
@@ -164,8 +181,8 @@ const BusinessEntry = () => {
         console.log(isValid, 'validateFormDatdidii33a');
 
         if (isValid) {
-            formData.totalAmount = totalAmount
-
+            formData.totalAmount = parseFloat(totalAmount).toFixed(2)
+// return
             axios.post(`${API_URL}/api/businessEntry`, formData, {
                 headers: {
                     'Content-Type': "application/json"
@@ -345,7 +362,7 @@ const BusinessEntry = () => {
                             </Col>
                             <Col md={6}>
                                 <FormGroup>
-                                    <Label for="contactNo">Company Name</Label>
+                                    <Label for="contactNo">Contact Number</Label>
                                     <Input
                                         id="contactNo"
                                         name="contactNo"
@@ -397,12 +414,129 @@ const BusinessEntry = () => {
 
                         <hr />
 
-                        <Table bordered>
+
+                        <div style={{ overflowX: 'auto' }}>
+                            <Table bordered responsive hover >
+                                <thead>
+                                    <tr style={{ backgroundColor: '#f8f9fa', color: '#495057' }}>
+                                        <th style={{ minWidth: '150px' }}>Item Name</th>
+                                        <th style={{ minWidth: '80px' }}>Units</th>
+                                        <th style={{ minWidth: '100px' }}>Price</th>
+                                        <th style={{ minWidth: '120px' }}>Discount %</th>
+                                        <th style={{ minWidth: '100px' }}>VAT %</th>
+                                        <th style={{ minWidth: '120px' }}>Amount</th>
+                                        <th style={{ minWidth: '120px' }}>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {formData.items.map((item, index) => (
+                                        <tr key={index}>
+                                            <td className="col-md-3">
+                                                <Input
+                                                    type="text"
+                                                    value={item.name}
+                                                    onChange={(e) => handleItemChange(index, "name", e.target.value)}
+                                                    placeholder="Enter Name"
+                                                    style={{ padding: '5px', fontSize: '14px' }}
+                                                />
+                                                {formErrors[`item-${index}`]?.name && <div className="text-danger">{formErrors[`item-${index}`].name}</div>}
+                                            </td>
+                                            <td className="col-md-1">
+                                                <Input
+                                                    type="number"
+                                                    value={item.units}
+                                                    onChange={(e) => handleItemChange(index, "units", e.target.value)}
+                                                    placeholder="Units"
+                                                    style={{ padding: '5px', fontSize: '14px' }}
+                                                />
+                                                {formErrors[`item-${index}`]?.units && <div className="text-danger">{formErrors[`item-${index}`].units}</div>}
+                                            </td>
+                                            <td className="col-md-2">
+                                                <Input
+                                                    type="number"
+                                                    value={item.price}
+                                                    onChange={(e) => handleItemChange(index, "price", e.target.value)}
+                                                    placeholder="Price"
+                                                    style={{ padding: '5px', fontSize: '14px' }}
+                                                />
+                                                {formErrors[`item-${index}`]?.price && <div className="text-danger">{formErrors[`item-${index}`].price}</div>}
+                                            </td>
+                                            <td className="col-md-2">
+                                                <Input
+                                                    type="number"
+                                                    value={item.discountPercent}
+                                                    onChange={(e) => handleItemChange(index, "discountPercent", e.target.value)}
+                                                    placeholder="Discount"
+                                                    style={{ padding: '5px', fontSize: '14px' }}
+                                                />
+                                                {formErrors[`item-${index}`]?.discountPercent && <div className="text-danger">{formErrors[`item-${index}`].discountPercent}</div>}
+                                            </td>
+                                            <td className="col-md-2">
+                                                <Input
+                                                    type="number"
+                                                    value={item.vatPercent}
+                                                    onChange={(e) => handleItemChange(index, "vatPercent", e.target.value)}
+                                                    placeholder="Enter VAT %"
+                                                    style={{ padding: '5px', fontSize: '14px' }}
+                                                />
+                                                {formErrors[`item-${index}`]?.vatPercent && <div className="text-danger">{formErrors[`item-${index}`].vatPercent}</div>}
+                                            </td>
+                                            <td className="col-md-2">
+                                                <Input
+                                                    type="number"
+                                                    value={item.amount}
+                                                    placeholder="Amount"
+                                                    style={{ padding: '5px', fontSize: '14px' }}
+                                                    disabled
+                                                />
+                                                {formErrors[`item-${index}`]?.amount && <div className="text-danger">{formErrors[`item-${index}`].amount}</div>}
+                                            </td>
+                                            <td style={{ display: 'flex', justifyContent: 'space-evenly' }}>
+                                                <Button color="success" onClick={() => handleAddItem(index)}>
+                                                    <i class="bi bi-plus-lg"></i>
+                                                </Button>
+
+                                                {
+                                                    index != 0 && <Button color="danger" onClick={() => handleRemoveItem(index)}>
+                                                        <i class="bi bi-trash3-fill"></i>
+                                                    </Button>
+                                                }
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td style={{ textAlign: 'center' }}><b>Total Amount</b></td>
+                                        <td>
+                                            <Input
+                                                type="number"
+                                                value={totalAmount}
+                                                placeholder="Amount"
+                                                disabled
+                                                style={{ padding: '5px', fontSize: '14px' }}
+                                            />
+                                        </td>
+                                        <td style={{ display: 'flex', justifyContent: 'space-evenly' }}></td>
+                                    </tr>
+                                </tfoot>
+                            </Table>
+                        </div>
+
+
+                        {/* <Table bordered responsive>
                             <thead>
                                 <tr>
                                     <th>Item Name</th>
                                     <th>Units</th>
-                                    <th>Amount</th>
+                                    <th>Price</th>
+                                    <th>Discount %</th>
+                                    <th>VAT %</th>
+                                    <th>Amount </th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
@@ -430,9 +564,37 @@ const BusinessEntry = () => {
                                         <td>
                                             <Input
                                                 type="number"
+                                                value={item.price}
+                                                onChange={(e) => handleItemChange(index, "price", e.target.value)}
+                                                placeholder="Price"
+                                            />
+                                            {formErrors[`item-${index}`]?.amount && <div className="text-danger">{formErrors[`item-${index}`].price}</div>}
+                                        </td>
+                                        <td>
+                                            <Input
+                                                type="number"
+                                                value={item.discount}
+                                                onChange={(e) => handleItemChange(index, "discount", e.target.value)}
+                                                placeholder="Discount"
+                                            />
+                                            {formErrors[`item-${index}`]?.amount && <div className="text-danger">{formErrors[`item-${index}`].discount}</div>}
+                                        </td>
+                                        <td>
+                                            <Input
+                                                type="number"
+                                                value={item.vatPercent}
+                                                onChange={(e) => handleItemChange(index, "vatPercent", e.target.value)}
+                                                placeholder="Enter VAT %"
+                                            />
+                                            {formErrors[`item-${index}`]?.vatPercent && <div className="text-danger">{formErrors[`item-${index}`].vatPercent}</div>}
+                                        </td>
+                                        <td>
+                                            <Input
+                                                type="number"
                                                 value={item.amount}
-                                                onChange={(e) => handleItemChange(index, "amount", e.target.value)}
+                                                // onChange={(e) => handleItemChange(index, "a", e.target.value)}
                                                 placeholder="Amount"
+                                                disabled
                                             />
                                             {formErrors[`item-${index}`]?.amount && <div className="text-danger">{formErrors[`item-${index}`].amount}</div>}
                                         </td>
@@ -468,7 +630,7 @@ const BusinessEntry = () => {
                                     </td>
                                 </tr>
                             </tfoot>
-                        </Table>
+                        </Table> */}
 
 
                         <hr />

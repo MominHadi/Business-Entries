@@ -81,7 +81,7 @@ exports.saveBusinessEntries = async (req, res) => {
         // Commit the transaction if everything is successful
         res.setHeader('Content-Type', 'application/pdf');
         res.setHeader('Content-Disposition', `inline;filename="${invoiceName}"`);
-        const pdfUrl = await createInvoice(savedBusinessEntry[0]);
+        const pdfUrl = await createInvoice(savedBusinessEntry[0],{session});
         await session.commitTransaction();
         res.status(201).json({ status: "Success", message: "Business Entry saved successfully", data: savedBusinessEntry, pdfUrl });
 
