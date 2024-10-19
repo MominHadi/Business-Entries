@@ -5,49 +5,31 @@ import {
     CardTitle,
     CardBody,
     Button,
-    Form,
     FormGroup,
     Label,
     Input,
-    Table,
     Spinner
 } from "reactstrap";
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom';
 import SweetAlert2 from "react-sweetalert2";
-
 import { useEffect, useState } from "react";
-import nationality from 'i18n-nationality';
-
-// import { DataTable } from 'primereact/datatable';
-// import { Column } from 'primereact/column';
 import DataTable from 'react-data-table-component';
-
-import { API_URL } from "./config/apiConfig";
 import axios from "axios";
-
+import { API_URL } from "./config/apiConfig";
 
 const BusinessEntryReports = () => {
     const [reportsData, setReportsData] = useState([]);
+    const [totalAmount, setTotalAmount] = useState(0); // State for total amount
     const [swalProps, setSwalProps] = useState({ show: false });
-    const [isLoading, setIsLoading] = useState(false); // Loader state
-
+    const [isLoading, setIsLoading] = useState(false);
     const [formData, setFormData] = useState({
-
         fromDate: new Date().toISOString().split('T')[0],
         toDate: new Date().toISOString().split('T')[0],
-
     });
 
     const [formErrors, setFormErrors] = useState({
-        invoiceNo: "",
-        businessCategory: "",
-        subCategory: "",
-        customerName: "",
-        passportNo: "",
-        nationality: "",
-        contactNo: "",
-        items: [],
-
+        fromDate: "",
+        toDate: "",
     });
 
     const columns = [
@@ -77,12 +59,9 @@ const BusinessEntryReports = () => {
             sortable: true,
         },
     ];
-    const Navigate = useNavigate();
 
     const validateFormData = () => {
         const errors = {};
-        let newTotalAmount = 0;
-
         if (!formData.fromDate) errors.fromDate = "From Date is required";
         if (!formData.toDate) errors.toDate = "To Date is required";
         if (formData.fromDate && formData.toDate && new Date(formData.fromDate) > new Date(formData.toDate)) {
@@ -90,37 +69,26 @@ const BusinessEntryReports = () => {
         }
 
         setFormErrors(errors);
-        // Set totalAmount only after calculation completes
-
         return Object.keys(errors).length === 0;
     };
 
     const submitFormData = () => {
         const isValid = validateFormData();
-
-        console.log(isValid, 'validateFormData');
-
         if (isValid) {
             setIsLoading(true);
             axios.post(`${API_URL}/api/reports`, formData).then(response => {
-                console.log(response, 'Response')
-
                 if (response.status === 200) {
-                    console.log(response.data.data, 'Reponse Data')
-                    setReportsData(response.data.data)
+                    const fetchedData = response.data.data;
+                    const total = fetchedData.reduce((acc, item) => acc + parseFloat(item.totalAmount || 0), 0);
+                    setReportsData(fetchedData);
+                    setTotalAmount(total); // Set the total amount
                 }
             }).catch(error => {
-                console.log(error)
-
+                console.log(error);
             }).finally(() => {
                 setIsLoading(false);
-            })
-
-        } else {
-            console.log(`Validation Failed`)
+            });
         }
-
-
     };
 
     const handleChange = (e) => {
@@ -130,6 +98,14 @@ const BusinessEntryReports = () => {
         });
     };
 
+    // Create a total row object
+    const totalRow = {
+        invoiceNo: "",
+        date: "",
+        customerName: "Total",
+        category: "",
+        totalAmount: totalAmount.toFixed(2), // Ensure it's formatted to 2 decimal places
+    };
 
     return (
         <>
@@ -153,9 +129,7 @@ const BusinessEntryReports = () => {
                                             onChange={handleChange}
                                         />
                                     </FormGroup>
-
                                     {formErrors.fromDate && <div className="text-danger">{formErrors.fromDate}</div>}
-
                                 </Col>
                                 <Col md={6}>
                                     <FormGroup>
@@ -169,24 +143,18 @@ const BusinessEntryReports = () => {
                                         />
                                     </FormGroup>
                                     {formErrors.toDate && <div className="text-danger">{formErrors.toDate}</div>}
-                                    {formErrors.dateRange && <div className="text-danger">{formErrors.dateRange}</div>}
                                 </Col>
                             </Row>
-
-
                             <hr />
-
                             <div style={{ textAlign: 'center' }}>
                                 <Button color="primary" onClick={submitFormData}>
-                                    <i class="bi bi-download"></i>  Generate Report
+                                    <i className="bi bi-download"></i> Generate Report
                                 </Button>
                             </div>
-
                         </CardBody>
                     </Card>
                 </Col>
                 <SweetAlert2 {...swalProps} />
-
             </Row>
             {isLoading ? (
                 <Row className="text-center">
@@ -204,8 +172,9 @@ const BusinessEntryReports = () => {
                                     <DataTable
                                         title="Business Entry Report"
                                         columns={columns}
-                                        data={reportsData}
+                                        data={[...reportsData, totalRow]} // Append the total row
                                         pagination
+                                        highlightOnHover
                                     />
                                 </CardBody>
                             </Card>
@@ -223,7 +192,6 @@ const BusinessEntryReports = () => {
                     </Row>
                 )
             )}
-
         </>
     );
 };
