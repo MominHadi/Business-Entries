@@ -69,30 +69,32 @@ const BusinessEntry = () => {
     };
 
     useEffect(() => {
-        nationality.registerLocale(require('i18n-nationality/langs/en.json'));
-
-        const allNationalities = nationality.getNames('en');
-
-        const nationalitiesArray = Object.entries(allNationalities).map(([code, name]) => ({
-            code,
-            name,
-        }));
-
-        setNationalities(nationalitiesArray);
 
         axios.get(`${API_URL}/api/businessEntry/invoiceNo`)
-            .then(response => {
-                if (response.data && response.data.data.seriesValue) {
-                    setFormData(prevFormData => ({
-                        ...prevFormData,
-                        invoiceNo: response.data.data.seriesValue
-                    }));
-                }
-            })
-            .catch(error => {
-                console.log(error, 'Errors')
-            });
+        .then(response => {
+            if (response.data && response.data.data.seriesValue) {
+                setFormData(prevFormData => ({
+                    ...prevFormData,
+                    invoiceNo: response.data.data.seriesValue
+                }));
+            }
+        })
+        .catch(error => {
+            console.log(error, 'Errors')
+        });
 
+        // nationality.registerLocale(require('i18n-nationality/langs/en.json'));
+
+        // const allNationalities = nationality.getNames('en');
+
+        // const nationalitiesArray = Object.entries(allNationalities).map(([code, name]) => ({
+        //     code,
+        //     name,
+        // }));
+
+        // setNationalities(nationalitiesArray);
+
+   
     }, []);
 
     const handleItemChange = (index, field, value) => {
