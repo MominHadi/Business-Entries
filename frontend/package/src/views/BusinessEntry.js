@@ -26,7 +26,7 @@ const BusinessEntry = () => {
     const [swalProps, setSwalProps] = useState({ show: false });
 
     const [formData, setFormData] = useState({
-        invoiceNo: "",
+        invoiceNo: "Fetching...",
         businessCategory: "",
         subCategory: "",
         customerName: "",
@@ -70,32 +70,36 @@ const BusinessEntry = () => {
 
     useEffect(() => {
 
-        axios.get(`${API_URL}/api/businessEntry/invoiceNo`)
-        .then(response => {
-            if (response.data && response.data.data.seriesValue) {
-                setFormData(prevFormData => ({
-                    ...prevFormData,
-                    invoiceNo: response.data.data.seriesValue
-                }));
+        nationality.registerLocale(require('i18n-nationality/langs/en.json'));
+
+        const allNationalities = nationality.getNames('en');
+        const nationalitiesArray = Object.entries(allNationalities).map(([code, name]) => ({
+            code,
+            name,
+        }));
+
+        setNationalities(nationalitiesArray);
+
+        // Fetch the invoice number
+        const fetchInvoiceNo = async () => {
+            try {
+                const response = await axios.get(`${API_URL}/api/businessEntry/invoiceNo`);
+                if (response.data && response.data.data.seriesValue) {
+                    // Set the invoiceNo directly into formData after fetch
+                    setFormData(prevFormData => ({
+                        ...prevFormData,
+                        invoiceNo: response.data.data.seriesValue
+                    }));
+                }
+            } catch (error) {
+                console.log(error, 'Errors');
             }
-        })
-        .catch(error => {
-            console.log(error, 'Errors')
-        });
+        };
 
-        // nationality.registerLocale(require('i18n-nationality/langs/en.json'));
+        fetchInvoiceNo();
 
-        // const allNationalities = nationality.getNames('en');
-
-        // const nationalitiesArray = Object.entries(allNationalities).map(([code, name]) => ({
-        //     code,
-        //     name,
-        // }));
-
-        // setNationalities(nationalitiesArray);
-
-   
     }, []);
+
 
     const handleItemChange = (index, field, value) => {
         const newItems = [...formData.items];
