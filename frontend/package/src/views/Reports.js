@@ -81,7 +81,7 @@ const BusinessEntryReports = () => {
                     const fetchedData = response.data.data;
                     const total = fetchedData.reduce((acc, item) => acc + parseFloat(item.totalAmount || 0), 0);
                     setReportsData(fetchedData);
-                    setTotalAmount(total); // Set the total amount
+                    setTotalAmount(total);
                 }
             }).catch(error => {
                 console.log(error);
@@ -102,9 +102,9 @@ const BusinessEntryReports = () => {
     const totalRow = {
         invoiceNo: "",
         date: "",
-        customerName: "Total",
-        category: "",
-        totalAmount: totalAmount.toFixed(2), // Ensure it's formatted to 2 decimal places
+        customerName: "",
+        category: "Total",
+        totalAmount: totalAmount.toFixed(2), 
     };
 
     return (
