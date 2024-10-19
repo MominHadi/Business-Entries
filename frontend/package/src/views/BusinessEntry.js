@@ -82,7 +82,12 @@ const BusinessEntry = () => {
 
         axios.get(`${API_URL}/api/businessEntry/invoiceNo`)
             .then(response => {
-                // setFormData({ ...formData, invoiceNo: response.data.data.seriesValue })
+                if (response.data && response.data.data.seriesValue) {
+                    setFormData(prevFormData => ({
+                        ...prevFormData,
+                        invoiceNo: response.data.data.seriesValue
+                    }));
+                }
             })
             .catch(error => {
                 console.log(error, 'Errors')
@@ -183,7 +188,7 @@ const BusinessEntry = () => {
 
         if (isValid) {
             formData.totalAmount = parseFloat(totalAmount).toFixed(2)
-// return
+            // return
             axios.post(`${API_URL}/api/businessEntry`, formData, {
                 headers: {
                     'Content-Type': "application/json"
