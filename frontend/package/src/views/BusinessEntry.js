@@ -58,6 +58,7 @@ const BusinessEntry = () => {
         nationality: "",
         contactNo: "",
         items: [],
+
     });
     const Navigate = useNavigate();
     const handleChange = (e) => {
@@ -68,13 +69,6 @@ const BusinessEntry = () => {
     };
 
     useEffect(() => {
-        axios.get(`${API_URL}/api/businessEntry/invoiceNo`)
-            .then(response => {
-                setFormData({ ...formData, invoiceNo: response.data.data.seriesValue })
-            })
-            .catch(error => {
-                console.log(error, 'Errors')
-            });
         nationality.registerLocale(require('i18n-nationality/langs/en.json'));
 
         const allNationalities = nationality.getNames('en');
@@ -86,7 +80,13 @@ const BusinessEntry = () => {
 
         setNationalities(nationalitiesArray);
 
-
+        axios.get(`${API_URL}/api/businessEntry/invoiceNo`)
+            .then(response => {
+                // setFormData({ ...formData, invoiceNo: response.data.data.seriesValue })
+            })
+            .catch(error => {
+                console.log(error, 'Errors')
+            });
 
     }, []);
 
@@ -183,7 +183,7 @@ const BusinessEntry = () => {
 
         if (isValid) {
             formData.totalAmount = parseFloat(totalAmount).toFixed(2)
-            // return
+// return
             axios.post(`${API_URL}/api/businessEntry`, formData, {
                 headers: {
                     'Content-Type': "application/json"
