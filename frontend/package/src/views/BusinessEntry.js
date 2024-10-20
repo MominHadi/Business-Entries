@@ -70,7 +70,7 @@ const BusinessEntry = () => {
             [e.target.name]: e.target.value
         });
     };
-
+    const [invoiceValue,setInvoiceValue]=useState(0);
     useEffect(() => {
 
         nationality.registerLocale(require('i18n-nationality/langs/en.json'));
@@ -93,6 +93,7 @@ const BusinessEntry = () => {
                         ...prevFormData,
                         invoiceNo: response.data.data.seriesValue
                     }));
+                    setInvoiceValue( response.data.data.seriesValue)
                 }
             } catch (error) {
                 console.log(error, 'Errors');
@@ -273,7 +274,7 @@ const BusinessEntry = () => {
                                         id="invoiceNo"
                                         name="invoiceNo"
                                         type="text"
-                                        value={formData.invoiceNo}
+                                        value={invoiceValue}
                                         disabled
                                     />
 
