@@ -3,7 +3,6 @@ const path = require('path')
 const PDFDocument = require('pdfkit');
 const formatDate = require('../utils/formatDate')
 exports.createInvoice = async (businessEntry) => {
-    console.log(businessEntry, 'businessEntry params')
     try {
         const { invoiceNo, date, customerName, contactNo, passportNo, nationality, category, subCategory, notes, items, totalAmount } = businessEntry;
         const invoiceName = `Invoice-${invoiceNo}.pdf`;

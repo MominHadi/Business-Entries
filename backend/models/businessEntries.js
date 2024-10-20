@@ -24,6 +24,7 @@ const businessEntriesSchema = new mongoose.Schema({
         // enum: ['Indian Apostille', 'Dubai Embassy and Mofa', 'Others'],
         // required: true
     },
+
     customerName: {
         type: String,
         required: true
@@ -61,19 +62,19 @@ const businessEntriesSchema = new mongoose.Schema({
             price: {
                 type: Number,
                 required: true,
-                default:0
+                default: 0
             },
             discountPercent: {
                 type: Number,
                 required: true,
-                default:0
+                default: 0
             },
             vatPercent: {
                 type: Number,
                 required: true,
-                default:0
+                default: 0
             },
-            
+
             amount: {
                 type: Number,
                 required: true
@@ -85,7 +86,19 @@ const businessEntriesSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
-
+    paymentStatus: {
+        type: String,
+        required: true,
+        enum: ['Paid', 'Unpaid']
+    },
+    paymentMethod: {
+        type: String,
+        required: true,
+        enum: ['Cash', 'Bank']
+    },
+    reference: {
+        type: String
+    },
     invoiceCorrection: {
         type: String
     },

@@ -33,7 +33,8 @@ exports.saveBusinessEntries = async (req, res) => {
     try {
         let { invoiceNo, date, businessCategory, subCategory,
             customerName, companyName, contactNo,
-            passportNo, nationality, notes, items, totalAmount } = req.body;
+            passportNo, nationality, notes, items, totalAmount 
+            ,paymentStatus,paymentMethod,reference} = req.body;
 
         if (!invoiceNo) {
             return res.status(404).json({ status: 'Failed', message: "Invoice no. is required" })
@@ -46,7 +47,6 @@ exports.saveBusinessEntries = async (req, res) => {
 
         if (businessCategory && !['Attestation', 'Visa Application', 'Travel Insurance', 'Hotel Booking'].includes(businessCategory)) {
             return res.status(400).json({ status: "Failed", message: "Enter Valid Category" });
-
         }
 
 
@@ -63,7 +63,10 @@ exports.saveBusinessEntries = async (req, res) => {
             nationality,
             notes,
             items,
-            totalAmount
+            totalAmount,
+            paymentMethod,
+            paymentStatus,
+            reference
         }], { session });
 
         //Updating Invoice No.

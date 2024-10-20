@@ -36,6 +36,9 @@ const BusinessEntry = () => {
         contactNo: "",
         date: new Date().toISOString().split('T')[0],
         notes: "",
+        paymentStatus: "Unpaid",
+        paymentMethod: "",
+        reference: "",
         items: [
             {
                 name: "",
@@ -160,6 +163,7 @@ const BusinessEntry = () => {
             if (!formData.subCategory) errors.subCategory = "Sub-category is required";
 
         }
+
         if (!formData.passportNo) errors.passportNo = "Passport/ID No is required";
         if (!formData.nationality) errors.nationality = "Nationality is required";
 
@@ -181,6 +185,10 @@ const BusinessEntry = () => {
             }
         });
 
+
+        if (!formData.paymentStatus) errors.paymentStatus = "Payment Status is required";
+        if (!formData.paymentMethod) errors.paymentMethod = "Payment Method is required";
+        
         setFormErrors(errors);
         // Set totalAmount only after calculation completes
         setTotalAmount(newTotalAmount);
@@ -268,7 +276,7 @@ const BusinessEntry = () => {
                                         value={formData.invoiceNo}
                                         disabled
                                     />
-                                    {console.log(formData.invoiceNo, 'formData.invoiceN')}
+
                                 </FormGroup>
                             </Col>
                             <Col md={6}>
@@ -540,111 +548,61 @@ const BusinessEntry = () => {
                         </div>
 
 
-                        {/* <Table bordered responsive>
-                            <thead>
-                                <tr>
-                                    <th>Item Name</th>
-                                    <th>Units</th>
-                                    <th>Price</th>
-                                    <th>Discount %</th>
-                                    <th>VAT %</th>
-                                    <th>Amount </th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {formData.items.map((item, index) => (
-                                    <tr key={index}>
-                                        <td>
-                                            <Input
-                                                type="text"
-                                                value={item.name}
-                                                onChange={(e) => handleItemChange(index, "name", e.target.value)}
-                                                placeholder="Enter item name"
-                                            />
-                                            {formErrors[`item-${index}`]?.name && <div className="text-danger">{formErrors[`item-${index}`].name}</div>}
-                                        </td>
-                                        <td>
-                                            <Input
-                                                type="number"
-                                                value={item.units}
-                                                onChange={(e) => handleItemChange(index, "units", e.target.value)}
-                                                placeholder="Units"
-                                            />
-                                            {formErrors[`item-${index}`]?.units && <div className="text-danger">{formErrors[`item-${index}`].units}</div>}
-                                        </td>
-                                        <td>
-                                            <Input
-                                                type="number"
-                                                value={item.price}
-                                                onChange={(e) => handleItemChange(index, "price", e.target.value)}
-                                                placeholder="Price"
-                                            />
-                                            {formErrors[`item-${index}`]?.amount && <div className="text-danger">{formErrors[`item-${index}`].price}</div>}
-                                        </td>
-                                        <td>
-                                            <Input
-                                                type="number"
-                                                value={item.discount}
-                                                onChange={(e) => handleItemChange(index, "discount", e.target.value)}
-                                                placeholder="Discount"
-                                            />
-                                            {formErrors[`item-${index}`]?.amount && <div className="text-danger">{formErrors[`item-${index}`].discount}</div>}
-                                        </td>
-                                        <td>
-                                            <Input
-                                                type="number"
-                                                value={item.vatPercent}
-                                                onChange={(e) => handleItemChange(index, "vatPercent", e.target.value)}
-                                                placeholder="Enter VAT %"
-                                            />
-                                            {formErrors[`item-${index}`]?.vatPercent && <div className="text-danger">{formErrors[`item-${index}`].vatPercent}</div>}
-                                        </td>
-                                        <td>
-                                            <Input
-                                                type="number"
-                                                value={item.amount}
-                                                // onChange={(e) => handleItemChange(index, "a", e.target.value)}
-                                                placeholder="Amount"
-                                                disabled
-                                            />
-                                            {formErrors[`item-${index}`]?.amount && <div className="text-danger">{formErrors[`item-${index}`].amount}</div>}
-                                        </td>
-                                        <td style={{ display: 'flex', justifyContent: 'space-evenly' }}>
-                                            <Button color="success" onClick={() => handleAddItem(index)}>
-                                                <i class="bi bi-plus-lg"></i>
-                                            </Button>
-
-                                            {
-                                                index != 0 && <Button color="danger" onClick={() => handleRemoveItem(index)}>
-                                                    <i class="bi bi-trash3-fill"></i>
-                                                </Button>
-                                            }
-
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                            <tfoot>
-
-                                <tr>
-                                    <td></td>
-                                    <td style={{ textAlign: 'center' }}><b>Total Amount</b>  </td>
-                                    <td>
-                                        <Input
-                                            type="number"
-                                            value={totalAmount}
-                                            placeholder="Amount"
-                                            disabled
-                                        />   </td>
-                                    <td style={{ display: 'flex', justifyContent: 'space-evenly' }}>
-
-                                    </td>
-                                </tr>
-                            </tfoot>
-                        </Table> */}
-
-
+                        <hr />
+<Row>    <b><h5>Payment Details</h5></b></Row>
+<br/>
+                        <Row>
+                        
+                            <Col md={6}>
+                                <FormGroup>
+                                    <Label for="paymentStatus">Payment Status</Label>
+                                    <Input
+                                        id="paymentStatus"
+                                        name="paymentStatus"
+                                        type="select"
+                                        value={formData.paymentStatus}
+                                        onChange={handleChange}
+                                    >
+                                        <option value="">Select Payment Status</option>
+                                        <option value="Paid">Paid</option>
+                                        <option value="Unpaid">Unpaid</option>
+                                    </Input>
+                                    {formErrors.paymentStatus && <div className="text-danger">{formErrors.paymentStatus}</div>}
+                                </FormGroup>
+                            </Col>
+                            <Col md={6}>
+                                <FormGroup>
+                                    <Label for="paymentMethod">Payment Method</Label>
+                                    <Input
+                                        id="paymentMethod"
+                                        name="paymentMethod"
+                                        type="select"
+                                        value={formData.paymentMethod}
+                                        onChange={handleChange}
+                                    >
+                                        <option value="">Select Payment Method</option>
+                                        <option value="Cash">Cash</option>
+                                        <option value="Bank">Bank</option>
+                                    </Input>
+                                    {formErrors.paymentMethod && <div className="text-danger">{formErrors.paymentMethod}</div>}
+                                </FormGroup>
+                            </Col>
+                            <Col md={6}>
+                                <FormGroup>
+                                    <Label for="reference">Reference</Label>
+                                    <Input
+                                        id="reference"
+                                        name="reference"
+                                        type="text"
+                                        value={formData.reference}
+                                        onChange={handleChange}
+                                        placeholder="Enter Reference"
+                                    >
+                                     
+                                    </Input>
+                                </FormGroup>
+                            </Col>
+                        </Row>
                         <hr />
 
                         <FormGroup>
