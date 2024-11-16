@@ -70,7 +70,7 @@ const BusinessEntry = () => {
             [e.target.name]: e.target.value
         });
     };
-    const [invoiceValue,setInvoiceValue]=useState(0);
+    const [invoiceValue, setInvoiceValue] = useState(0);
     useEffect(() => {
 
         nationality.registerLocale(require('i18n-nationality/langs/en.json'));
@@ -88,12 +88,14 @@ const BusinessEntry = () => {
             try {
                 const response = await axios.get(`${API_URL}/api/businessEntry/invoiceNo`);
                 if (response.data && response.data.data.seriesValue) {
-                    // Set the invoiceNo directly into formData after fetch
-                    setFormData(prevFormData => ({
-                        ...prevFormData,
-                        invoiceNo: response.data.data.seriesValue
-                    }));
-                    setInvoiceValue( response.data.data.seriesValue)
+
+                    const today = new Date();
+                    let dd = String(today.getDate())
+                    let month = today.getMonth() + 1;
+                    let yyyy = String(today.getFullYear()).slice(2);
+
+
+                    setInvoiceValue(`${month}${dd}${yyyy}-${response.data.data.seriesValue}`)
                 }
             } catch (error) {
                 console.log(error, 'Errors');
@@ -101,29 +103,36 @@ const BusinessEntry = () => {
         };
 
         fetchInvoiceNo();
+        setFormData(prevFormData => ({
+            ...prevFormData,
+            invoiceNo: invoiceValue
+        }))
 
     }, []);
 
 
     const handleItemChange = (index, field, value) => {
+
         const newItems = [...formData.items];
         newItems[index][field] = value;
-
+        console.log(newItems, '33 Called', index, field, value)
         // Recalculate totalAmount after item change
         let newTotalAmount = 0;
         newItems.forEach(item => {
+
             const amount = parseFloat(item.amount) || 0;
             const discount = parseFloat(item.discountPercent) || 0;
             const vatPercent = parseFloat(item.vatPercent) || 0;
             const price = parseFloat(item.price) || 0;
+            const units = parseFloat(item.units) || 0
+            let grossAmount = parseFloat(units) * parseFloat(price);
 
-            const discountAmount = (parseFloat(price) * parseFloat(discount)) / 100;
-            const discountedValue = (parseFloat(price) - parseFloat(discountAmount));
+            const discountAmount = (parseFloat(grossAmount) * parseFloat(discount)) / 100;
+            const discountedValue = (parseFloat(grossAmount) - parseFloat(discountAmount));
             const vatAmount = discountAmount > 0 ? (parseFloat(discountedValue) * parseFloat(vatPercent)) / 100 :
                 (parseFloat(price) * parseFloat(vatPercent)) / 100;
-            item.amount = parseFloat((parseFloat(price) - parseFloat(discountAmount)) + parseFloat(vatAmount)).toFixed(2);
-            newTotalAmount += item.amount;
-
+            item.amount = ((parseFloat(grossAmount) - parseFloat(discountAmount)) + parseFloat(vatAmount)).toFixed(2);
+            newTotalAmount +=  parseFloat(item.amount);
         });
 
         setFormData({ ...formData, items: newItems });
@@ -166,7 +175,7 @@ const BusinessEntry = () => {
         }
 
         if (!formData.passportNo) errors.passportNo = "Passport/ID No is required";
-        if (!formData.nationality) errors.nationality = "Nationality is required";
+        // if (!formData.nationality) errors.nationality = "Nationality is required";
 
         formData.items.forEach((item, index) => {
             const itemErrors = {};
@@ -189,7 +198,7 @@ const BusinessEntry = () => {
 
         if (!formData.paymentStatus) errors.paymentStatus = "Payment Status is required";
         if (!formData.paymentMethod) errors.paymentMethod = "Payment Method is required";
-        
+
         setFormErrors(errors);
         // Set totalAmount only after calculation completes
         setTotalAmount(newTotalAmount);
@@ -428,7 +437,7 @@ const BusinessEntry = () => {
                                             </option>
                                         ))}
                                     </Input>
-                                    {formErrors.nationality && <div className="text-danger">{formErrors.nationality}</div>}
+                                    {/* {formErrors.nationality && <div className="text-danger">{formErrors.nationality}</div>} */}
                                 </FormGroup>
                             </Col>
                         </Row>
@@ -548,12 +557,11 @@ const BusinessEntry = () => {
                             </Table>
                         </div>
 
-
                         <hr />
-<Row>    <b><h5>Payment Details</h5></b></Row>
-<br/>
+                        <Row>    <b><h5>Payment Details</h5></b></Row>
+                        <br />
                         <Row>
-                        
+
                             <Col md={6}>
                                 <FormGroup>
                                     <Label for="paymentStatus">Payment Status</Label>
@@ -584,6 +592,7 @@ const BusinessEntry = () => {
                                         <option value="">Select Payment Method</option>
                                         <option value="Cash">Cash</option>
                                         <option value="Bank">Bank</option>
+                                        <option value="Pending">Pending</option>
                                     </Input>
                                     {formErrors.paymentMethod && <div className="text-danger">{formErrors.paymentMethod}</div>}
                                 </FormGroup>
@@ -599,7 +608,7 @@ const BusinessEntry = () => {
                                         onChange={handleChange}
                                         placeholder="Enter Reference"
                                     >
-                                     
+
                                     </Input>
                                 </FormGroup>
                             </Col>
