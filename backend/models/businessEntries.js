@@ -30,7 +30,6 @@ const businessEntriesSchema = new mongoose.Schema({
         required: true
     },
     companyName: {
-        //Customer Company Name
         type: String,
         required: false
     },
@@ -43,7 +42,6 @@ const businessEntriesSchema = new mongoose.Schema({
     },
     nationality: {
         type: String,
-        required: true
     },
 
     notes: {
@@ -94,7 +92,7 @@ const businessEntriesSchema = new mongoose.Schema({
     paymentMethod: {
         type: String,
         required: true,
-        enum: ['Cash', 'Bank']
+        enum: ['Cash', 'Bank','Pending']
     },
     reference: {
         type: String

@@ -23,9 +23,7 @@ exports.getLatestInvoiceNo = async (req, res) => {
 }
 
 
-
 exports.saveBusinessEntries = async (req, res) => {
-
 
     const session = await mongoose.startSession();
     session.startTransaction();
@@ -48,7 +46,6 @@ exports.saveBusinessEntries = async (req, res) => {
         if (businessCategory && !['Attestation', 'Visa Application', 'Travel Insurance', 'Hotel Booking'].includes(businessCategory)) {
             return res.status(400).json({ status: "Failed", message: "Enter Valid Category" });
         }
-
 
         // Create the paymentIn document
         const savedBusinessEntry = await BusinessEntries.create([{
