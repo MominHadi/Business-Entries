@@ -1,5 +1,26 @@
 const BusinessEntries = require('../models/businessEntries');
 const formatDate = require('../utils/formatDate');
+const fs = require('fs');
+const path = require('path');
+
+
+
+const deleteFile = (filename) => {
+
+    return new Promise((resolve, reject) => {
+
+        const filePath = path.join(__dirname, '../', 'data','invoices', `Invoice-${filename}.pdf`);
+        console.log(filePath, 'Path ');
+        fs.unlink(filePath, (err) => {
+            if (err) {
+                reject(`Error deleting file: ${err.message}`);
+            } else {
+                resolve(`File ${filename} deleted successfully!`);
+            }
+        });
+
+    })
+};
 
 
 exports.getBusinessData = async (req, res) => {
@@ -12,7 +33,7 @@ exports.getBusinessData = async (req, res) => {
                 $gte: fromDate,
                 $lte: toDate
             }
-        }).select(`invoiceNo date customerName category contactNo totalAmount`)
+        }).select(`invoiceNo date customerName category contactNo totalAmount _id`)
 
         if (!data) {
             return res.status(404).json({ message: 'Data Not Found' })
@@ -39,3 +60,37 @@ exports.getBusinessData = async (req, res) => {
         });
     }
 };
+
+
+exports.deleteEntry = async (req, res) => {
+    try {
+        console.log('Delete Entry Called');
+        const { id } = req.params;
+
+        const businessEntryDetails = await BusinessEntries.findById(id);
+
+
+        if (!businessEntryDetails) {
+            return res.status(404).json({ status: 'Failed', message: 'Entry not found' });
+        }
+
+        await deleteFile(businessEntryDetails.invoiceNo);
+
+
+        await BusinessEntries.findByIdAndDelete(id)
+
+        console.log('Invoice Deleted Successfully ');
+
+
+        res.status(200).json({ message: `Invoice No.: ${businessEntryDetails.invoiceNo} Deleted Successfully ` })
+
+
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({
+            status: "Failed",
+            message: "Internal Server Error",
+            error: error.message || error
+        });
+    }
+}

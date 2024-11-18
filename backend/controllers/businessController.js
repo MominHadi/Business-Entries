@@ -99,6 +99,23 @@ exports.saveBusinessEntries = async (req, res) => {
     } finally {
         session.endSession();
     }
+};
 
+
+exports.deleteInvoice = async (req, res) => {
+    try {
+
+
+
+
+    } catch (error) {
+
+        res.status(500).json({
+            status: "Failed",
+            message: "Internal Server Error",
+            error: error.message || error
+        });
+
+    }
 
 }

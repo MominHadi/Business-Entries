@@ -31,7 +31,6 @@ const BusinessEntryReports = () => {
         fromDate: "",
         toDate: "",
     });
-
     const columns = [
         {
             name: 'Invoice No',
@@ -58,7 +57,49 @@ const BusinessEntryReports = () => {
             selector: row => row.totalAmount,
             sortable: true,
         },
+        {
+            name: 'Actions',
+            cell: row =>
+                row.category !== 'Total' ? (
+                    <Button color="danger" title="Delete Entry" onClick={() => handleDeleteEntry(row._id)} >
+                        <i className="bi bi-trash3-fill"></i>
+                    </Button>
+                ) : null,
+            ignoreRowClick: true,
+            allowOverflow: true,
+            button: true,
+        },
     ];
+
+
+    const handleDeleteEntry = (_id) => {
+        console.log(_id, 'Id');
+        const userConfirmed = window.confirm('Are you sure you want to delete this entry?');
+        if (userConfirmed) {
+
+            axios.delete(`${API_URL}/api/reports/invoice/${_id}`).then(response => {
+                if (response.status === 200) {
+                    window.alert('Entry Deleted Successfully')
+                    setReportsData(reportsData.filter(report => report._id !== _id));
+                    const newTotalAmount = reportsData.reduce((acc, item) => {
+                        if (item._id !== _id) {
+                            return acc + parseFloat(item.totalAmount || 0);
+                        }
+                        return acc;
+                    }, 0);
+                    setTotalAmount(newTotalAmount);
+                }
+            }).catch(error => {
+                console.log(error);
+            }).finally(() => {
+                setIsLoading(false);
+            });
+        } else {
+            console.log('not delteeb')
+        }
+
+
+    }
 
     const validateFormData = () => {
         const errors = {};
@@ -104,7 +145,7 @@ const BusinessEntryReports = () => {
         date: "",
         customerName: "",
         category: "Total",
-        totalAmount: totalAmount.toFixed(2), 
+        totalAmount: totalAmount.toFixed(2),
     };
 
     return (
