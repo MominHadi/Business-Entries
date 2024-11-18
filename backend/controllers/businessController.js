@@ -33,7 +33,7 @@ exports.saveBusinessEntries = async (req, res) => {
             passportNo, nationality, notes, items, totalAmount
             , paymentStatus, paymentMethod, reference } = req.body;
 
-        conole.log(req.body, 'Request Body');
+        console.log(req.body, 'Request Body');
 
         if (!invoiceNo) {
             return res.status(404).json({ status: 'Failed', message: "Invoice no. is required" })
