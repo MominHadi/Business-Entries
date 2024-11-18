@@ -27,16 +27,18 @@ exports.saveBusinessEntries = async (req, res) => {
 
     const session = await mongoose.startSession();
     session.startTransaction();
-
     try {
         let { invoiceNo, date, businessCategory, subCategory,
             customerName, companyName, contactNo,
-            passportNo, nationality, notes, items, totalAmount 
-            ,paymentStatus,paymentMethod,reference} = req.body;
+            passportNo, nationality, notes, items, totalAmount
+            , paymentStatus, paymentMethod, reference } = req.body;
+
+        conole.log(req.body, 'Request Body');
 
         if (!invoiceNo) {
             return res.status(404).json({ status: 'Failed', message: "Invoice no. is required" })
         }
+
         const isInvoiceExist = await BusinessEntries.findOne({ invoiceNo });
 
         if (isInvoiceExist) {
@@ -69,7 +71,7 @@ exports.saveBusinessEntries = async (req, res) => {
         //Updating Invoice No.
 
         const updatedSeries = await SeriesNumber.findOneAndUpdate(
-            { seriesName:'invoiceNumber' },
+            { seriesName: 'invoiceNumber' },
             { $inc: { seriesValue: + 1 } },
             { new: true, session }
         );
@@ -81,7 +83,7 @@ exports.saveBusinessEntries = async (req, res) => {
         // Commit the transaction if everything is successful
         res.setHeader('Content-Type', 'application/pdf');
         res.setHeader('Content-Disposition', `inline;filename="${invoiceName}"`);
-        const pdfUrl = await createInvoice(savedBusinessEntry[0],{session});
+        const pdfUrl = await createInvoice(savedBusinessEntry[0], { session });
         await session.commitTransaction();
         res.status(201).json({ status: "Success", message: "Business Entry saved successfully", data: savedBusinessEntry, pdfUrl });
 

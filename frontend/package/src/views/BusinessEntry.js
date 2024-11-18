@@ -95,7 +95,13 @@ const BusinessEntry = () => {
                     let yyyy = String(today.getFullYear()).slice(2);
 
 
-                    setInvoiceValue(`${month}${dd}${yyyy}-${response.data.data.seriesValue}`)
+                    setInvoiceValue(`${month}${dd}${yyyy}-${response.data.data.seriesValue}`);
+
+
+                    setFormData({
+                        ...formData,
+                        invoiceNo:`${month}${dd}${yyyy}-${response.data.data.seriesValue}`
+                    });
                 }
             } catch (error) {
                 console.log(error, 'Errors');
@@ -212,6 +218,8 @@ const BusinessEntry = () => {
 
         if (isValid) {
             formData.totalAmount = parseFloat(totalAmount).toFixed(2)
+
+            console.log(formData,'Payload')
             // return
             axios.post(`${API_URL}/api/businessEntry`, formData, {
                 headers: {
